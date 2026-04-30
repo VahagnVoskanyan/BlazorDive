@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ServerManagement/ServerManagement.csproj" />
+  <Project Path="ToDoList/ToDoList.csproj" />
+</Solution>

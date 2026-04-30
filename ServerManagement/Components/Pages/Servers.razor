@@ -1,0 +1,68 @@
+﻿@page "/servers"
+@using ServerManagement.Components.Controls
+
+@* For Server Interactivy *@
+@rendermode InteractiveServer
+
+@inject NavigationManager NaviMan
+
+<h3>Servers</h3>
+<br />
+<br />
+
+<CityListComponent @ref="cityListComponent" SelectedCityCallback="HandleCitySelection"></CityListComponent>
+
+<br />
+
+<SearchBarComponent @ref="searchBarComponent" SearchServersCallback="HandleSearchServer"></SearchBarComponent>
+
+<br />
+
+@* Cascading Parameter *@
+<CascadingValue Name="SelectedCity" Value="@selectedCity">
+    @* For Server Interactivy *@
+    <ServerListComponent @rendermode="InteractiveServer"
+                         CityName=@selectedCity
+                         SearchFilter=@searchFilter></ServerListComponent>
+</CascadingValue>
+<p>
+    <a href="/servers/add" class="btn btn-primary">Add Server</a>
+</p>
+
+<p>
+    <button class="btn btn-secondary"
+            @onclick="@(() =>
+                    {
+                        //this.servers.Insert(0, new Server {Name = "ServerA", City = "Toronto" });
+                    })">
+        Add Server 2
+    </button>
+</p>
+
+@code {
+    private string selectedCity = "Toronto";
+    private string searchFilter = "";
+
+    private CityListComponent? cityListComponent;
+    private SearchBarComponent? searchBarComponent;
+
+    private void HandleCitySelection(string cityName)
+    {
+        this.selectedCity = cityName;
+        this.searchFilter = "";
+
+        searchBarComponent?.ClearSearch();
+    }
+
+    private void HandleSearchServer(string seacrhFilter)
+    {
+        this.searchFilter = seacrhFilter;
+
+        cityListComponent?.ClearSelectedCity();
+    }
+
+    /*private void HandleServerFilterChange(ChangeEventArgs args)
+    {
+        serverFilter = args.Value?.ToString() ?? string.Empty;
+    }*/
+}

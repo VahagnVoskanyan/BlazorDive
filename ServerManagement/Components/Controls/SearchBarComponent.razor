@@ -1,0 +1,39 @@
+﻿
+<div class="input-group mb-3 input-width">
+    @* <input type="text" class="form-control" placeholder="Search for a server" @onchange="HandleServerFilterChange" /> *@
+    <input type="text" class="form-control" placeholder="Search for a server"
+           @bind-value="serverFilter"
+           @bind-value:event="oninput" /> @* Default was onchange event. Now its change when we type. *@
+    <button class="btn btn-outline-secondary" type="button" id="button-search" @onclick="HandleSearch">Search</button>
+</div>
+
+@code {
+    private string serverFilter = "";
+
+    // private string serverFilter
+    // {
+    //     get => _serverFilter;
+    //     set
+    //     {
+    //         _serverFilter = value;
+    //         // Can do else
+    //         //this.servers = ServersRepository.SearchServers(_serverFilter);
+    //     }
+    // }
+
+    public void ClearSearch()
+    {
+        this.serverFilter = string.Empty;
+        StateHasChanged(); // Tell Blazor to re-render this component
+    }
+
+    [Parameter]
+    public EventCallback<string> SearchServersCallback { get; set; }
+
+    private void HandleSearch()
+    {
+        SearchServersCallback.InvokeAsync(serverFilter);
+        
+        //this.selectedCity = string.Empty;
+    }
+}

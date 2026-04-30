@@ -1,0 +1,185 @@
+﻿@inject NavigationManager NaviMan
+
+@if (Server != null)
+{
+    #region reg
+    @* This is Interactivy using Enhanced Form *@
+    @* <EditForm Enhance="true" Model="server" FormName="serverComponentForm" OnSubmit="ChangeServerStatus">
+
+         @* hidden inputs to include server properties in form submission.  *@
+    @*<InputNumber @bind-Value="server.Id" hidden></InputNumber>
+        <InputText @bind-Value="server.Name" hidden></InputText>
+        <InputText @bind-Value="server.City" hidden></InputText>
+        <InputCheckbox @bind-Value="server.IsOnline" hidden></InputCheckbox>
+
+        <div data-name="@server.Name"
+             data-status="Server is @(server.IsOnline ? "online" : "offline")"
+             style="color:@(server.IsOnline ? "green" : "red")">
+            @server.Name is in @server.City is @(server.IsOnline ? "online" : "offline")
+            &nbsp;
+            <button type="submit" class="btn btn-primary">Turn On/Off</button>
+        </div>
+
+    </EditForm> *@
+
+    @* Server Interactivy *@
+    @* <div data-name="@server.Name"
+         data-status="Server is @(server.IsOnline ? "online" : "offline")"
+         style="color:@(server.IsOnline ? "green" : "red")">
+        @server.Name is in @server.City is @(server.IsOnline ? "online" : "offline")
+        &nbsp;
+        <button type="button" class="btn btn-primary" @onclick="ChangeStatus">Turn On/Off</button>
+    </div> *@
+    #endregion
+
+    @* <li @key="Server.Id" style="background-color: @GetBackgroundColor()">
+        @Server.Name in @Server.City is
+        <span style="color:@(Server.IsOnline ? "green" : "red")">
+            @(Server.IsOnline ? "onine" : "offline")
+        </span>
+        &nbsp;
+        @if (Server.IsOnline)
+        {
+            <button type="button"
+                    class="btn btn-outline-danger"
+                    @onclick="@(() => { Server.IsOnline = false; })">
+                Trun Off
+            </button>
+        }
+        else
+        {
+            <button type="button"
+                    class="btn btn-outline-success"
+                    @onclick="@(() => { Server.IsOnline = true; })">
+                Turn On
+            </button>
+        }
+        
+        &nbsp; 
+        <a href="/servers/@Server.Id" class="btn btn-link">Edit</a>*@
+        @* Using routable component as non-routable component example *@
+        @* <button type="button" class="btn btn-link" @onclick="@(() => {this.editingServer = !this.editingServer;})">Edit</button> *@
+        @* &nbsp;
+        <EditForm Model="Server"
+                  FormName="@($"form-server-{Server.Id}")"
+                  OnValidSubmit="() => { DeleteServer(Server.Id); }">
+            <button type="submit" class="btn btn-primary">Delete</button>
+        </EditForm> *@
+
+        @* Using routable component as non-routable component example *@
+        @* @if (editingServer)
+        {
+            <ServerManagement.Components.Pages.EditServer 
+                id="this.Server.Id"></ServerManagement.Components.Pages.EditServer>
+        }</li> *@
+
+        @* Table View *@
+
+
+    <tr style="background-color: @GetBackgroundColor()">
+        <td>@Server.Name</td>
+        <td>@Server.City</td>
+        <td style="color:@(Server.IsOnline ? "green" : "red")">
+            @(Server.IsOnline ? "onine" : "offline")
+        </td>
+        <td>
+            @if (Server.IsOnline)
+            {
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        @onclick="@(() => { Server.IsOnline = false; })">
+                    Trun Off
+                </button>
+            }
+            else
+            {
+                <button type="button"
+                        class="btn btn-outline-success"
+                        @onclick="@(() => { Server.IsOnline = true; })">
+                    Turn On
+                </button>
+            }
+            &nbsp;
+            <a href="/servers/@Server.Id" class="btn btn-link">Edit</a>
+        </td>
+        <td>
+            <EditForm Model="Server"
+                      FormName="@($"form-server-{Server.Id}")"
+                      OnValidSubmit="() => { DeleteServer(Server.Id); }"
+                        style="@($"background-color:{GetBackgroundColor()}")">
+                @* Edded background-color because in .NET 10 it doesn't propagate form element from above*@
+                <button type="submit" class="btn btn-primary">Delete</button>
+            </EditForm>
+        </td>
+    </tr>
+}
+
+
+@code {
+    // Using routable component as non-routable component example
+    // private bool editingServer = false;
+
+    [CascadingParameter(Name = "SelectedCity")]
+    public string? SelectedCity { get; set; }
+
+    [Parameter]
+    public Server? Server { get; set; }
+
+    private void DeleteServer(int serverId)
+    {
+        if (serverId > 0)
+        {
+            ServersRepository.DeleteServer(serverId);
+            NaviMan.NavigateTo("/servers", true);
+        }
+    }
+
+    private string GetBackgroundColor()
+    {
+        if (SelectedCity != null && Server != null && Server.City == SelectedCity)
+        {
+            switch (SelectedCity)
+            {
+                case "Toronto":
+                    return "powderblue";
+                case "Ottawa":
+                    return "pink";
+                case "Montreal":
+                    return "white";
+                case "Calgary":
+                    return "palegreen";
+                case "Halifax":
+                    return "lightgray";
+                default:
+                    return "white"; // Default background for other cities
+            }
+        }
+        return "white"; // Default background for other servers
+    }
+
+
+    // This used for Interactivy using Enhanced Form
+    /*[SupplyParameterFromForm]
+    public Server? server { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        server ??= new Server { Name = "Server 1", City = "Toronto" };
+    }
+
+    private void ChangeServerStatus()
+    {
+        if (server != null)
+        {
+            server.IsOnline = !server.IsOnline;
+            }
+        }*/
+
+    /* private void ChangeStatus()
+    {
+        if (server != null)
+        {
+            server.IsOnline = !server.IsOnline;
+        }
+    }*/
+}

@@ -1,0 +1,68 @@
+﻿@page "/todolist"
+
+@rendermode InteractiveServer
+
+<h3>To Do List</h3>
+<br />
+<br />
+
+<button type="button"
+        class="btn btn-primary"
+        @onclick="AddTask">
+    Add Task
+</button>
+<br />
+<br />
+
+@if (_tasks != null && _tasks.Count > 0)
+{
+    <ul class="list-unstyled">
+        @foreach (var task in _tasks)
+        {
+            <li @key="task.Id">
+                <div class="row mb-2">
+                    <div class="col-1" style="width:30px">
+                        <input type="checkbox"
+                            style="vertical-align:middle"
+                            class="form-check-input"
+                            @bind-value="task.IsCompleted"
+                            checked="@task.IsCompleted">
+                    </div>
+                    <div class="col">
+                        @if (task.IsCompleted)
+                        {
+                            <input type="text"
+                                style="vertical-align:middle"
+                                class="form-control border-0 text-decoration-line-through"
+                                @bind-value="task.Name"
+                                disabled>
+                        }
+                        else
+                        {
+                            <input type="text"
+                                style="vertical-align:middle"
+                                class="form-control border-0"
+                                @bind-value="task.Name">
+                        }
+                    </div>
+                    <div class="col">
+                        @if (task.IsCompleted)
+                        {
+                            <text>Completed at: @task.DateCompleted.ToLongDateString()</text>
+                        }
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<ToDoItem> _tasks = ToDoItemsRepo.GetTasks();
+
+    private void AddTask()
+    {
+        ToDoItemsRepo.AddTask(new ToDoItem { Name = "New Task" });
+        _tasks = ToDoItemsRepo.GetTasks();
+    }
+}

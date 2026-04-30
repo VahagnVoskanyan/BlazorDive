@@ -1,0 +1,84 @@
+﻿@* @if (servers != null && servers.Count > 0)
+{
+    <ul class="list-unstyled">
+ *@
+<!-- #region Old -->
+<!-- @foreach (var server in servers)
+    {
+        @* @key prevents from updating all elements in view when we add element to the list. *@
+        <li @key="server.Id">
+            @server.Name in @server.City is
+            <span style="color:@(server.IsOnline ? "green" : "red")">
+                @(server.IsOnline ? "onine" : "offline")
+            </span>
+            &nbsp;
+            <a href="/servers/@server.Id" class="btn btn-link">Edit</a>
+            &nbsp;
+            <EditForm Model="server"
+                      FormName="@($"form-server-{server.Id}")"
+                      OnValidSubmit="() => { DeleteServer(server.Id); }">
+                <button type="submit" class="btn btn-primary">Delete</button>
+            </EditForm>
+
+            @* Doesn't work using 'onclick' because this is SSR and there is no interactivity.
+                JS must handle 'onclick'. Need to use a form *@
+            @* <button type="button" class="btn btn-primary" @onclick="() => { DeleteServer(server.Id); }">Delete</button> *@
+        </li>
+    }
+ -->
+<!-- #endregion -->
+@*         <Virtualize Items="this.servers" Context="server">
+            <ServerComponent Server = "server"></ServerComponent>
+        </Virtualize>
+
+    </ul>
+} *@
+
+@* <ul class="list-unstyled">
+    <RepeaterComponent Items="this.servers">
+        <Row Context="server"> 
+            <ServerComponent Server="server"></ServerComponent>
+        </Row>
+    </RepeaterComponent>
+</ul> *@
+
+<table class="table table-striped">
+    <RepeaterComponent Items="this.servers">
+        <Header>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>People Online</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+        </Header>
+        <Row Context="server">
+            <ServerComponent Server="server"></ServerComponent>
+        </Row>
+    </RepeaterComponent>
+</table>
+
+
+@code {
+    [Parameter]
+    public string? CityName { get; set; }
+    
+    [Parameter]
+    public string? searchFilter { get; set; }
+
+    // This time when we use Interactive Server (statefull) not Enahnced Form this isn't disturbing us.
+    // because this is using(saving) states
+    private List<Server>? servers;
+
+    override protected void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(this.searchFilter))
+            servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
+        else
+            servers = ServersRepository.SearchServers(searchFilter);
+    }
+}
