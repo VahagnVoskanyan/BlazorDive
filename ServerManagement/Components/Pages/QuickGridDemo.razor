@@ -6,11 +6,18 @@
 <h3>Quick Grid Demo</h3>
 <br/>
 
-@if (Servers != null && Servers.Count > 0)
+@if (servers != null && servers.Count > 0)
 {
-    <QuickGrid Items="Servers.AsQueryable()" Pagination="paginationState">
+    <QuickGrid @ref="quickGrid" Items="filteredServers.AsQueryable()" Pagination="paginationState">
         <PropertyColumn Property="s => s.Name"></PropertyColumn>
-        <PropertyColumn Property="s => s.City" Sortable="true"></PropertyColumn>
+        <PropertyColumn Property="s => s.City" Sortable="true">
+            <ColumnOptions>
+                <input type="search" @bind="cityFilter" 
+                    @bind:after="ApplyCityFilter"
+                    placeholder="Filter by city"
+                    class="form-control"/>
+            </ColumnOptions>
+        </PropertyColumn>
         <TemplateColumn Title="Status" Sortable="true" SortBy="GridSort<Server>.ByAscending(s => s.IsOnline)">
             @if (context.IsOnline)
             {
@@ -59,7 +66,16 @@
 }
 
 @code {
-    private List<Server>? Servers { get; set; } = ServersRepository.GetServers();
+    private QuickGrid<Server>? quickGrid;
+    private List<Server>? servers = ServersRepository.GetServers();
+    private List<Server>? filteredServers;
+    private string cityFilter = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        filteredServers = servers;
+    }
 
     private PaginationState paginationState = new PaginationState()
     {
@@ -73,5 +89,22 @@
             ServersRepository.DeleteServer(serverId);
             NaviMan.NavigateTo("/quick-grid", true);
         }
+    }
+
+    private void ApplyCityFilter()
+    {
+        if (string.IsNullOrWhiteSpace(cityFilter))
+        {
+            filteredServers = servers;
+        }
+        else
+        {
+            filteredServers = servers?
+                .Where(s => s.City.Contains(cityFilter, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        cityFilter = string.Empty;
+        quickGrid.HideColumnOptionsAsync();
     }
 }

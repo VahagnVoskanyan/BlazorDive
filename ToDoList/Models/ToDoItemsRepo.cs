@@ -9,7 +9,7 @@
             new ToDoItem { Id = 4, Name = "Task 4", },
             ];
 
-        public static void AddTask(ToDoItem task)
+        public static void AddItem(ToDoItem task)
         {
             if (_toDoItems.Count > 0)
             {
@@ -25,7 +25,7 @@
 
         }
 
-        public static List<ToDoItem> GetTasks()
+        public static List<ToDoItem> GetItems()
         {
             return _toDoItems
                 .OrderBy(i => i.IsCompleted)
@@ -33,7 +33,7 @@
                 .ToList();
         }
 
-        public static ToDoItem? GetTaskById(int id)
+        public static ToDoItem? GetItemById(int id)
         {
             var task = _toDoItems.FirstOrDefault(s => s.Id == id);
             if (task != null)
@@ -48,7 +48,7 @@
             return null;
         }
 
-        public static void UpdateTask(int taskId, ToDoItem task)
+        public static void UpdateItem(int taskId, ToDoItem task)
         {
             if (taskId != task.Id) return;
 
@@ -59,7 +59,7 @@
             }
         }
 
-        public static void DeleteTask(int itemId)
+        public static void DeleteItem(int itemId)
         {
             var task = _toDoItems.FirstOrDefault(s => s.Id == itemId);
             if (task != null)
@@ -68,7 +68,7 @@
             }
         }
 
-        public static List<ToDoItem> SearchTasks(string taskFilter)
+        public static List<ToDoItem> SearchItems(string taskFilter)
         {
             return _toDoItems.Where(s => s.Name.Contains(taskFilter, StringComparison.OrdinalIgnoreCase)).ToList();
         }

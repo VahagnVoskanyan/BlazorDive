@@ -1,5 +1,5 @@
 ﻿
-<div class="input-group mb-3 input-width">
+<div class="input-group mb-3 input-width" @attributes=AdditionalAttributes>
     @* <input type="text" class="form-control" placeholder="Search for a server" @onchange="HandleServerFilterChange" /> *@
     <input type="text" class="form-control" placeholder="Search for a server"
            @bind-value="serverFilter"
@@ -29,6 +29,10 @@
 
     [Parameter]
     public EventCallback<string> SearchServersCallback { get; set; }
+
+    // Arbitrary additional attributes that can be applied to the root element of this component
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private void HandleSearch()
     {
