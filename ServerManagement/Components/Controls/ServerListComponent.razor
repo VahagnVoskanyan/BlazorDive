@@ -66,19 +66,36 @@
 @code {
     [Parameter]
     public string? CityName { get; set; }
-    
+
     [Parameter]
-    public string? searchFilter { get; set; }
+    public string? SearchFilter { get; set; }
 
     // This time when we use Interactive Server (statefull) not Enahnced Form this isn't disturbing us.
     // because this is using(saving) states
     private List<Server>? servers;
 
+    // Timer for updating Servers user counts
+    //private System.Threading.Timer? updateUserCountsTimer;
+    //protected override void OnInitialized()
+    //{
+    //   base.OnInitialized();
+    //   
+    //   updateUserCountsTimer = new System.Threading.Timer(async _ =>
+    //   {
+    //       // Here it runs in other thread and in that when it tries to update state
+    //       // it throws exception because we are trying to update state from other thread.
+    //       // To solve this we need to use InvokeAsync to update state in the main thread.
+    //       // Blazor uses SynchronizationContext to synchronize UI thread and background thread.
+    //       //StateHasChanged();
+    //       await base.InvokeAsync(StateHasChanged);
+    //   }, null, 2000, 2000);
+    //}
+
     override protected void OnParametersSet()
     {
-        if (string.IsNullOrWhiteSpace(this.searchFilter))
+        if (string.IsNullOrWhiteSpace(this.SearchFilter))
             servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
         else
-            servers = ServersRepository.SearchServers(searchFilter);
+            servers = ServersRepository.SearchServers(SearchFilter);
     }
 }

@@ -83,6 +83,19 @@
             @(Server.IsOnline ? "onine" : "offline")
         </td>
         <td>
+            @* Simulating number of people online for the server *@
+            @if (Server.IsOnline)
+            {
+                Random random = new Random();
+                int randomNumber = random.Next(1, 350);
+                <text>@randomNumber</text>
+            }
+            else
+            {
+                <text>N/A</text>
+            }
+        </td>
+        <td>
             @if (Server.IsOnline)
             {
                 <button type="button"
@@ -124,6 +137,39 @@
 
     [Parameter]
     public Server? Server { get; set; }
+
+
+    # region For Controlling the rendering of the component.
+
+    private string? prevServerName;
+    private string? prevServerCity;
+    private bool? prevIsOnline;
+    private bool shouldRender;
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        shouldRender =
+            prevServerName != Server?.Name ||
+            prevServerCity != Server?.City ||
+            prevIsOnline != Server?.IsOnline;
+
+        if (shouldRender)
+        {
+            prevServerName = Server?.Name;
+            prevServerCity = Server?.City;
+            prevIsOnline = Server?.IsOnline;
+        }
+    }
+    protected override bool ShouldRender()
+    {
+        Console.WriteLine("ServerComponent ShouldRender called.");
+        // To Test Random Number Generation using Timer
+        //return true;
+        return shouldRender;
+    }
+
+    #endregion
 
     private void DeleteServer(int serverId)
     {

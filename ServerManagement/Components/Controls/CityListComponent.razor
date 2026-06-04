@@ -1,10 +1,10 @@
-﻿
+﻿@implements IDisposable
 
-@if (Cities != null && Cities.Count > 0)
+@if (cities != null && cities.Count > 0)
 {
     <div class="container-fluid text-center">
         <div class="row w-50">
-            @foreach (var city in Cities)
+            @foreach (var city in cities)
             {
                 <CityComponent 
                     City=@city
@@ -25,7 +25,7 @@
         StateHasChanged(); // Tell Blazor to re-render this component
     }
 
-    private List<string> Cities = CitiesRepository.GetCities();
+    private List<string>? cities;
 
     [Parameter]
     public EventCallback<string> SelectedCityCallback { get; set; }
@@ -43,7 +43,71 @@
             for (int i = 16; i < 1999; i++)
             {
                 this.servers.Add(new Server { Id = i, Name = $"Server{i}", City = cityName, IsOnline = i % 2 == 0 });
-            }
+                }
+            }*/
+    }
+
+    protected override void OnInitialized()
+    {
+        var guid = Guid.NewGuid();
+        Console.WriteLine($"CityListComponent: {nameof(OnInitialized)} : {guid}");
+
+        base.OnInitialized();
+
+        if (RendererInfo.IsInteractive) // means SignalR channel is established
+        {
+            cities = CitiesRepository.GetCities();
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        var guid = Guid.NewGuid();
+        Console.WriteLine($"CityListComponent: {nameof(OnAfterRender)} : {guid}");
+
+        base.OnAfterRender(firstRender);
+
+        // Way till .NET 9.0
+        /*if (firstRender)
+        {
+            // Calling here not to Initialize twice
+            cities = CitiesRepository.GetCities();
+            StateHasChanged(); // Trigger a re-render to display the cities
         }*/
+    }
+
+
+    protected override bool ShouldRender()
+    {
+        var guid = Guid.NewGuid();
+        Console.WriteLine($"CityListComponent: {nameof(ShouldRender)} : {guid}");
+
+        return base.ShouldRender();
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        var guid = Guid.NewGuid();
+        Console.WriteLine($"CityListComponent: {nameof(SetParametersAsync)} : {guid}");
+
+        return base.SetParametersAsync(parameters);
+    }
+
+    
+
+    protected override void OnParametersSet()
+    {
+        var guid = Guid.NewGuid();
+        Console.WriteLine($"CityListComponent: {nameof(OnParametersSet)} : {guid}");
+
+        base.OnParametersSet();
+    }
+
+    
+
+    public void Dispose()
+    {
+        var guid = Guid.NewGuid();
+        Console.WriteLine($"CityListComponent: {nameof(Dispose)} : {guid}");
     }
 }
