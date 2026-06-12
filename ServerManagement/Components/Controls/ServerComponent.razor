@@ -113,7 +113,9 @@
                 </button>
             }
             &nbsp;
-            <a href="/servers/@Server.Id" class="btn btn-link">Edit</a>
+            @* <a href="/servers/@Server.Id" class="btn btn-link">Edit</a> *@
+            @* Using Combined AddEdit Server *@
+            <a href="/server/@Server.Id" class="btn btn-link">Edit</a>
         </td>
         <td>
             <EditForm Model="Server"

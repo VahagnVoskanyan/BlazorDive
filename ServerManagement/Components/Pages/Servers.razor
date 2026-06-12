@@ -1,4 +1,6 @@
 ﻿@page "/servers"
+@page "/servers/back_from/{CityName}"
+
 @using ServerManagement.Components.Controls
 
 @* For Server Interactivy *@
@@ -10,7 +12,9 @@
 <br />
 <br />
 
-<CityListComponent @ref="cityListComponent" SelectedCityCallback="HandleCitySelection"></CityListComponent>
+<CityListComponent @ref="cityListComponent" 
+    SelectedCityCallback="HandleCitySelection"
+    SelectedCity="@selectedCity"></CityListComponent>
 
 <br />
 
@@ -29,7 +33,9 @@
                          SearchFilter=@searchFilter></ServerListComponent>
 </CascadingValue>
 <p>
-    <a href="/servers/add" class="btn btn-primary">Add Server</a>
+    @* <a href="/servers/add" class="btn btn-primary">Add Server</a> *@
+    @* Using Combined AddEdit Server *@
+    <a href="/server" class="btn btn-primary">Add Server</a>
 </p>
 
 <p>
@@ -43,6 +49,9 @@
 </p>
 
 @code {
+    [Parameter]
+    public string? CityName { get; set; }
+
     private string selectedCity = "Toronto";
     private string searchFilter = "";
 
@@ -62,6 +71,15 @@
         this.searchFilter = seacrhFilter;
 
         cityListComponent?.ClearSelectedCity();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (NaviMan.Uri.Contains("back_from") &&
+                !string.IsNullOrEmpty(CityName))
+        {
+            selectedCity = CityName;
+        }
     }
 
     /*private void HandleServerFilterChange(ChangeEventArgs args)

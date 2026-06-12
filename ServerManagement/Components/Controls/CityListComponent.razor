@@ -8,7 +8,7 @@
             {
                 <CityComponent 
                     City=@city
-                    SelectedCity=@selectedCity
+                    SelectedCity=@SelectedCity
                     SelectedCityCallback="HandleCitySelection"></CityComponent>
             }
         </div>
@@ -17,11 +17,12 @@
 
 
 @code {
-    private string selectedCity = "Toronto";
+    [Parameter]
+    public string SelectedCity { get; set; } = "Toronto";
 
     public void ClearSelectedCity()
     {
-        this.selectedCity = string.Empty;
+        this.SelectedCity = string.Empty;
         StateHasChanged(); // Tell Blazor to re-render this component
     }
 
@@ -32,7 +33,7 @@
 
     private void HandleCitySelection(string cityName)
     {
-        this.selectedCity = cityName;
+        this.SelectedCity = cityName;
 
         SelectedCityCallback.InvokeAsync(cityName);
 
