@@ -1,4 +1,7 @@
-﻿@inject NavigationManager NaviMan
+﻿@using ServerManagement.StateStore
+
+@inject NavigationManager NaviMan
+@inject TorontoOnlineServersStore TorontoOnlineServersStore
 
 @if (Server != null)
 {
@@ -100,7 +103,7 @@
             {
                 <button type="button"
                         class="btn btn-outline-danger"
-                        @onclick="@(() => { Server.IsOnline = false; })">
+                        @onclick="@(() => { SetServerStatus(false); })">
                     Trun Off
                 </button>
             }
@@ -108,7 +111,7 @@
             {
                 <button type="button"
                         class="btn btn-outline-success"
-                        @onclick="@(() => { Server.IsOnline = true; })">
+                        @onclick="@(() => { SetServerStatus(true); })">
                     Turn On
                 </button>
             }
@@ -172,6 +175,26 @@
     }
 
     #endregion
+
+    private void SetServerStatus(bool isOnline)
+    {
+        if (Server != null)
+        {
+            if (Server.IsOnline != isOnline)
+            {
+                Server.IsOnline = isOnline;
+                if (Server.City!.Equals("Toronto", StringComparison.OrdinalIgnoreCase))
+                {
+                    var num = TorontoOnlineServersStore.GetNumbServersOnline();
+
+                    if (isOnline)
+                        TorontoOnlineServersStore.SetNumberServersOnline(num + 1);
+                    else if(num > 1)
+                        TorontoOnlineServersStore.SetNumberServersOnline(num - 1);
+                }
+            }
+        }
+    }
 
     private void DeleteServer(int serverId)
     {

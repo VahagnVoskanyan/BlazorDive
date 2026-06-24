@@ -2,11 +2,13 @@
 @page "/servers/back_from/{CityName}"
 
 @using ServerManagement.Components.Controls
+@using ServerManagement.StateStore
 
 @* For Server Interactivy *@
 @rendermode InteractiveServer
 
 @inject NavigationManager NaviMan
+@inject TorontoOnlineServersStore TorontoOnlineServersStore
 
 <h3>Servers</h3>
 <br />
@@ -57,6 +59,17 @@
 
     private CityListComponent? cityListComponent;
     private SearchBarComponent? searchBarComponent;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (RendererInfo.IsInteractive)
+        {
+            var serversToronto = ServersRepository.GetServersByCity("Toronto");
+            TorontoOnlineServersStore.SetNumberServersOnline(serversToronto.Count(s => s.IsOnline));
+        }
+    }
 
     private void HandleCitySelection(string cityName)
     {

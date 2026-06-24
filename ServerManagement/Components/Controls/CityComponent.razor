@@ -1,9 +1,19 @@
-﻿
+﻿@using ServerManagement.StateStore
+@inject TorontoOnlineServersStore TorontoOnlineServersStore
+
+@implements IDisposable
+
 <div class="col">
     <div class="card @(SelectedCity.Equals(City, StringComparison.OrdinalIgnoreCase) ? "border-primary" : "")" border-primary>
         @* <img src="@($"/images/{city}.png")" class="card-img-top" alt="..."> *@
         <div class="card-body">
             <button type="button" class="btn btn-primary" @onclick="() => { SelectCity(City); }">@City</button>
+        </div>
+        <div>
+            @if (City.Equals("Toronto", StringComparison.OrdinalIgnoreCase))
+            {
+                <text>@OnlineServersCount</text>
+            }
         </div>
     </div>
 </div>
@@ -18,8 +28,32 @@
     [Parameter]
     public EventCallback<string> SelectedCityCallback { get; set; }
 
+    private int OnlineServersCount;
+
     private void SelectCity(string cityName)
     {
         SelectedCityCallback.InvokeAsync(cityName);
     }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (RendererInfo.IsInteractive)
+        {
+            OnlineServersCount = TorontoOnlineServersStore.GetNumbServersOnline();
+            TorontoOnlineServersStore.AddStateChangeListeners(OnTorontoOnlineServersChanged);
+        }
+    }
+
+    private void OnTorontoOnlineServersChanged()
+    {
+        OnlineServersCount = TorontoOnlineServersStore.GetNumbServersOnline();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        TorontoOnlineServersStore.RemoveStateChangeListeners(OnTorontoOnlineServersChanged);
+    }   
 }

@@ -1,4 +1,5 @@
 using ServerManagement.Components;
+using ServerManagement.StateStore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ builder.Services.AddRazorComponents()
 
 // If write here then will work from SSR to InteractiveServer mode.
 //builder.Services.AddCascadingValue("SelectedCity", sp => "Toronto");
+
+builder.Services.AddScoped<TorontoOnlineServersStore>();
 
 var app = builder.Build();
 
