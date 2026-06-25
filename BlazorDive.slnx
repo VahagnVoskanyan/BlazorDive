@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="ServerManagement/ServerManagement.csproj" />
   <Project Path="ToDoList/ToDoList.csproj" />
+  <Project Path="WebAssemblyDemo/WebAssemblyDemo.Client/WebAssemblyDemo.Client.csproj" Id="9b273341-241a-4f1f-b270-842741ef88f0" />
+  <Project Path="WebAssemblyDemo/WebAssemblyDemo/WebAssemblyDemo.csproj" Id="9cb9409c-49a3-40e8-b7cb-bf1f13e8fe89" />
 </Solution>
