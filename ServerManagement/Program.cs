@@ -1,9 +1,17 @@
+using Microsoft.EntityFrameworkCore;
 using ServerManagement.Components;
+using ServerManagement.Data;
+using ServerManagement.Data.Repos;
 using ServerManagement.StateStore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContextFactory<ServerManagementContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Sql"));
+});
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -11,6 +19,8 @@ builder.Services.AddRazorComponents()
 //builder.Services.AddCascadingValue("SelectedCity", sp => "Toronto");
 
 builder.Services.AddScoped<TorontoOnlineServersStore>();
+
+builder.Services.AddTransient<IServersEFRepo, ServersEFRepo>();
 
 var app = builder.Build();
 

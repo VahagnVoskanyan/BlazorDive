@@ -1,5 +1,8 @@
 ﻿@page "/server/{id:int?}"
 
+@using ServerManagement.Data.Repos
+
+@inject IServersEFRepo ServersEFRepo
 @inject NavigationManager NaviMan
 
 @if (Id.HasValue)
@@ -78,7 +81,7 @@ else
     {
         if (this.Id.HasValue)
         {
-            Server ??= ServersRepository.GetServerById(Id.Value);
+            Server ??= ServersEFRepo.GetServerById(Id.Value);
             if (Server is null)
             {
                 NaviMan.NotFound(); // new .NET 10
@@ -99,9 +102,9 @@ else
         {
             //Server.Id = this.Id; // Set Id from URL to server object
             if (Id.HasValue)
-                ServersRepository.UpdateServer(Server.Id, Server);
+                ServersEFRepo.UpdateServer(Server.Id, Server);
             else
-                ServersRepository.AddServer(Server);
+                ServersEFRepo.AddServer(Server);
 
             NaviMan.NavigateTo($"/servers/back_from/{Server.City}");
         }

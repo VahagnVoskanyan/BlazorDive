@@ -1,4 +1,8 @@
-﻿@* @if (servers != null && servers.Count > 0)
+﻿@using ServerManagement.Data.Repos
+
+@inject IServersEFRepo ServersEFRepo
+
+@* @if (servers != null && servers.Count > 0)
 {
     <ul class="list-unstyled">
  *@
@@ -94,8 +98,8 @@
     override protected void OnParametersSet()
     {
         if (string.IsNullOrWhiteSpace(this.SearchFilter))
-            servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
+            servers = ServersEFRepo.GetServersByCity(CityName ?? "Toronto");
         else
-            servers = ServersRepository.SearchServers(SearchFilter);
+            servers = ServersEFRepo.SearchServers(SearchFilter);
     }
 }

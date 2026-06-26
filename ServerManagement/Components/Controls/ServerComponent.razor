@@ -1,7 +1,9 @@
-﻿@using ServerManagement.StateStore
+﻿@using ServerManagement.Data.Repos
+@using ServerManagement.StateStore
 
 @inject NavigationManager NaviMan
 @inject TorontoOnlineServersStore TorontoOnlineServersStore
+@inject IServersEFRepo ServersEFRepo
 
 @if (Server != null)
 {
@@ -182,7 +184,6 @@
         {
             if (Server.IsOnline != isOnline)
             {
-                Server.IsOnline = isOnline;
                 if (Server.City!.Equals("Toronto", StringComparison.OrdinalIgnoreCase))
                 {
                     var num = TorontoOnlineServersStore.GetNumbServersOnline();
@@ -192,6 +193,9 @@
                     else if(num > 1)
                         TorontoOnlineServersStore.SetNumberServersOnline(num - 1);
                 }
+
+                Server.IsOnline = isOnline;
+                ServersEFRepo.UpdateServer(Server.Id, Server);
             }
         }
     }
@@ -200,7 +204,7 @@
     {
         if (serverId > 0)
         {
-            ServersRepository.DeleteServer(serverId);
+            ServersEFRepo.DeleteServer(serverId);
             NaviMan.NavigateTo("/servers", true);
         }
     }

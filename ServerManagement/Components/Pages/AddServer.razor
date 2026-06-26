@@ -1,5 +1,8 @@
 ﻿@page "/servers/add"
 
+@using ServerManagement.Data.Repos
+
+@inject IServersEFRepo ServersEFRepo
 @inject NavigationManager NaviMan
 
 
@@ -60,7 +63,7 @@
     {
         if (server != null)
         {
-            ServersRepository.AddServer(server);
+            ServersEFRepo.AddServer(server);
             NaviMan.NavigateTo($"/servers/back_from/{server.City}");
         }
     }

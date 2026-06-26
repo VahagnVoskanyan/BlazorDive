@@ -1,6 +1,11 @@
 ﻿@page "/quick-grid"
+
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using ServerManagement.Data.Repos
+
+@inject IServersEFRepo ServersEFRepo
 @inject NavigationManager NaviMan
+
 @rendermode InteractiveServer
 
 <h3>Quick Grid Demo</h3>
@@ -33,7 +38,10 @@
             {
                 <button type="button"
                         class="btn btn-outline-danger"
-                        @onclick="@(() => { context.IsOnline = false; })">
+                        @onclick="@(() => { 
+                            context.IsOnline = false;
+                            ServersEFRepo.UpdateServer(context.Id, context);
+                        })">
                     Turn Off
                 </button>
             }
@@ -41,7 +49,10 @@
             {
                 <button type="button"
                         class="btn btn-outline-success"
-                        @onclick="@(() => { context.IsOnline = true; })">
+                        @onclick="@(() => { 
+                            context.IsOnline = true;
+                            ServersEFRepo.UpdateServer(context.Id, context);
+                        })">
                     Turn On
                 </button>
             }
@@ -67,14 +78,19 @@
 
 @code {
     private QuickGrid<Server>? quickGrid;
-    private List<Server>? servers = ServersRepository.GetServers();
+    private List<Server>? servers;
     private List<Server>? filteredServers;
     private string cityFilter = string.Empty;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        filteredServers = servers;
+
+        if (RendererInfo.IsInteractive)
+        {
+            servers = ServersEFRepo.GetServers();
+            filteredServers = servers;
+        }
     }
 
     private PaginationState paginationState = new PaginationState()
@@ -86,7 +102,7 @@
     {
         if (serverId > 0)
         {
-            ServersRepository.DeleteServer(serverId);
+            ServersEFRepo.DeleteServer(serverId);
             NaviMan.NavigateTo("/quick-grid", true);
         }
     }

@@ -3,12 +3,14 @@
 
 @using ServerManagement.Components.Controls
 @using ServerManagement.StateStore
+@using ServerManagement.Data.Repos
+
+@inject IServersEFRepo ServersEFRepo
+@inject NavigationManager NaviMan
+@inject TorontoOnlineServersStore TorontoOnlineServersStore
 
 @* For Server Interactivy *@
 @rendermode InteractiveServer
-
-@inject NavigationManager NaviMan
-@inject TorontoOnlineServersStore TorontoOnlineServersStore
 
 <h3>Servers</h3>
 <br />
@@ -66,7 +68,7 @@
 
         if (RendererInfo.IsInteractive)
         {
-            var serversToronto = ServersRepository.GetServersByCity("Toronto");
+            var serversToronto = ServersEFRepo.GetServersByCity("Toronto");
             TorontoOnlineServersStore.SetNumberServersOnline(serversToronto.Count(s => s.IsOnline));
         }
     }

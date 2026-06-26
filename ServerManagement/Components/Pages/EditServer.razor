@@ -1,7 +1,9 @@
 ﻿@page "/servers/{id:int}"
 
-@inject NavigationManager NaviMan
+@using ServerManagement.Data.Repos
 
+@inject IServersEFRepo ServersEFRepo
+@inject NavigationManager NaviMan
 @inject IJSRuntime JSRuntime
 
 <NavigationLock 
@@ -66,7 +68,7 @@
     protected override void OnParametersSet()
     {
         // If Null => set . Not set if not Null not to lost data from form
-        server ??= ServersRepository.GetServerById(this.Id);
+        server ??= ServersEFRepo.GetServerById(this.Id);
     }
 
     private void Submit()
@@ -74,7 +76,7 @@
         if(server != null)
         {
             server.Id = this.Id; // Set Id from URL to server object
-            ServersRepository.UpdateServer(server.Id, server);
+            ServersEFRepo.UpdateServer(server.Id, server);
             NaviMan.NavigateTo($"/servers/back_from/{server.City}");
         }
     }

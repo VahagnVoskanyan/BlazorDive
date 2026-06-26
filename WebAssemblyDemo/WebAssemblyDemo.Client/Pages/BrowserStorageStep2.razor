@@ -19,6 +19,7 @@
         {
             //data = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "demo-data");
             data = CStorage.Message;
+            Console.WriteLine($"Retrieved data: {data}");
             StateHasChanged();
         }
     }
