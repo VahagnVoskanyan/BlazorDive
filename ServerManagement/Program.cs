@@ -3,13 +3,17 @@ using ServerManagement.Components;
 using ServerManagement.Data;
 using ServerManagement.Data.Repos;
 using ServerManagement.StateStore;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using ServerManagement.Components.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("Sql");
 // Add services to the container.
 builder.Services.AddDbContextFactory<ServerManagementContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Sql"));
+    options.UseSqlServer(connectionString);
 });
 
 builder.Services.AddRazorComponents()
@@ -21,6 +25,39 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<TorontoOnlineServersStore>();
 
 builder.Services.AddTransient<IServersEFRepo, ServersEFRepo>();
+
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddScoped<IdentityRedirectManager>();
+
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddIdentityCookies();
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("Manager", policy => policy.RequireClaim("Role", "General Manager"));
+
+builder.Services.AddDbContext<ServerManagementIdentityContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+    })
+    .AddEntityFrameworkStores<ServerManagementIdentityContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
@@ -40,5 +77,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapAdditionalIdentityEndpoints();;
 
 app.Run();

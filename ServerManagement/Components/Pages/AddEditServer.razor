@@ -1,9 +1,13 @@
 ﻿@page "/server/{id:int?}"
 
+@using Microsoft.AspNetCore.Authorization
+
 @using ServerManagement.Data.Repos
 
 @inject IServersEFRepo ServersEFRepo
 @inject NavigationManager NaviMan
+
+@attribute [Authorize(Policy = "Manager")]
 
 @if (Id.HasValue)
 {
